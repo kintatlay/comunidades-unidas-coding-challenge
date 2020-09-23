@@ -58,7 +58,7 @@ class ContactUs extends Component {
         const { name, email, birthDate, emailConsent } = this.state
         e.preventDefault()
         console.log(this.state);
-        axios.post('https://my-json-server.typicode.com/JustUtahCoders/interview-users-api/users', {name : name, email: email, birthDate: birthDate, emailConsent: emailConsent })
+        axios.post('https://my-json-server.typicode.com/JustUtahCoders/interview-users-api/users', JSON.stringify({name : name, email: email, birthDate: birthDate, emailConsent: emailConsent }))
         .then(response => {
             console.log(response)
         })
