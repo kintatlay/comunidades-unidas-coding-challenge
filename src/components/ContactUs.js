@@ -8,8 +8,8 @@ class ContactUs extends Component {
         this.state = {
              name: '',
              email: '',
-             birthday: '',
-             contactViaEmail: false
+             birthDate: '',
+             emailConsent: false
         }
     }
 
@@ -25,15 +25,18 @@ class ContactUs extends Component {
         this.setState({
              name: '',
              email: '',
-             birthday: '',
-             contactViaEmail: false
+             birthDate: '',
+             emailConsent: false
         }, () => console.log(this.state))
     }
 
     handleSubmit = e => {
-        const { name, email, birthday, contactViaEmail } = this.state
+        const { name, email, birthDate, emailConsent } = this.state
         const validCharacters = /^[a-zA-Z ]+$/
         const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const today = new Date();
+        const birthdate = new Date(birthDate);
+
         e.preventDefault()
         if (name.length === 0) {
             alert('The NAME input field is missing.')
@@ -43,8 +46,10 @@ class ContactUs extends Component {
             alert('The EMAIL input field is missing.')
         } else if (!validEmail.test(email)) {
             alert('Invalid EMAIL input')
-        } else if (contactViaEmail === false) {
+        } else if (emailConsent === false) {
             alert('You must agree to be contact via email in order to submit.')
+        } else if (birthdate > today) {
+            alert('Invalid BIRTHDATE')
         } else {
             console.log(this.state);
             axios.post('https://my-json-server.typicode.com/JustUtahCoders/interview-users-api/users', this.state)
@@ -58,7 +63,7 @@ class ContactUs extends Component {
     }
 
     render() {
-        const { name, email, birthday, contactViaEmail } = this.state
+        const { name, email, birthDate, emailConsent } = this.state
         return (
             <div>
                 <form onSubmit={this.handleSubmit}>
@@ -81,19 +86,19 @@ class ContactUs extends Component {
                         />
                     </label>
                     <label>
-                        Birthday
+                        Birth Date
                         <input 
-                            name="birthday"
+                            name="birthDate"
                             type="date"
-                            value={birthday}
+                            value={birthDate}
                             onChange={this.changeHandler}
                         />
                     </label>
                     <label>
                         <input 
-                            name="contactViaEmail"
+                            name="emailConsent"
                             type="checkbox"
-                            checked={contactViaEmail}
+                            checked={emailConsent}
                             onChange={this.changeHandler}
                         />
                         I agree to be contact via email.
