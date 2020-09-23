@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import '../css/ContactUs.css';
 
 class ContactUs extends Component {
     constructor(props) {
@@ -9,16 +10,38 @@ class ContactUs extends Component {
              name: '',
              email: '',
              birthDate: '',
-             emailConsent: false
+             emailConsent: false,
+             disableSubmitButton: true
         }
     }
 
     changeHandler = e => {
-        const name = e.target.name
+        const nameSelect = e.target.name
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         this.setState({
-            [name]: value
+            [nameSelect]: value
         })
+        this.checkValidation()
+    }
+
+    checkValidation = e => {
+        
+        const { name, email, birthDate, emailConsent, disableSubmitButton } = this.state
+        const validCharacters = /^[a-zA-Z ]+$/
+        const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const today = new Date();
+        const birthdate = new Date(birthDate);
+        if (
+            !(name.length === 0) &&
+            name.match(validCharacters) &&
+            !(email.length === 0) &&
+            validEmail.test(email) &&
+            emailConsent === true &&
+            birthdate < today
+        ) {
+            this.setState({
+            disableSubmitButton: false
+        }, () => console.log('passed'))}
     }
 
     clearHandler = e => {
@@ -27,49 +50,34 @@ class ContactUs extends Component {
              email: '',
              birthDate: '',
              emailConsent: false
-        }, () => console.log(this.state))
+        })
+        console.log('clicked clear')
     }
 
     handleSubmit = e => {
         const { name, email, birthDate, emailConsent } = this.state
-        const validCharacters = /^[a-zA-Z ]+$/
-        const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        const today = new Date();
-        const birthdate = new Date(birthDate);
-
         e.preventDefault()
-        if (name.length === 0) {
-            alert('The NAME input field is missing.')
-        } else if (!name.match(validCharacters)) {
-            alert('The NAME input field can only contains alphabet characters and space')
-        } else if (email.length === 0) {
-            alert('The EMAIL input field is missing.')
-        } else if (!validEmail.test(email)) {
-            alert('Invalid EMAIL input')
-        } else if (emailConsent === false) {
-            alert('You must agree to be contact via email in order to submit.')
-        } else if (birthdate > today) {
-            alert('Invalid BIRTHDATE')
-        } else {
-            console.log(this.state);
-            axios.post('https://my-json-server.typicode.com/JustUtahCoders/interview-users-api/users', this.state)
-            .then(response => {
-                console.log(response)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
+        console.log(this.state);
+        axios.post('https://my-json-server.typicode.com/JustUtahCoders/interview-users-api/users', {name : name, email: email, birthDate: birthDate, emailConsent: emailConsent })
+        .then(response => {
+            console.log(response)
+        })
+        .catch(error => {
+            console.log(error)
+        })
     }
 
     render() {
-        const { name, email, birthDate, emailConsent } = this.state
+        const { name, email, birthDate, emailConsent, disableSubmitButton } = this.state
+        
         return (
-            <div>
+            <div className="container">
+                <h1>Contact Us</h1>
                 <form onSubmit={this.handleSubmit}>
                     <label>
                         Name
                         <input 
+                            className="text"
                             name="name"
                             type="text"
                             value={name}
@@ -79,6 +87,7 @@ class ContactUs extends Component {
                     <label>
                         Email
                         <input 
+                            className="text"
                             name="email"
                             type="email"
                             value={email}
@@ -88,14 +97,16 @@ class ContactUs extends Component {
                     <label>
                         Birth Date
                         <input 
+                            className="text"
                             name="birthDate"
                             type="date"
                             value={birthDate}
                             onChange={this.changeHandler}
                         />
                     </label>
-                    <label>
+                    <label className="checkbox">
                         <input 
+                            
                             name="emailConsent"
                             type="checkbox"
                             checked={emailConsent}
@@ -103,8 +114,10 @@ class ContactUs extends Component {
                         />
                         I agree to be contact via email.
                     </label>
-                    <button type="button" onClick={this.clearHandler}>Clear</button>
-                    <input type="submit" value="Submit"></input>
+                    <div className="float-right">
+                        <button className="clear" type="button" onClick={this.clearHandler}>Clear</button>
+                        <input disabled={disableSubmitButton} className={disableSubmitButton ? 'submit-inactive' : 'submit'} type="submit" value="Submit"></input>
+                    </div>
                 </form>
             </div>
         )
