@@ -21,27 +21,6 @@ class ContactUs extends Component {
         this.setState({
             [nameSelect]: value
         })
-        this.checkValidation()
-    }
-
-    checkValidation = e => {
-        
-        const { name, email, birthDate, emailConsent, disableSubmitButton } = this.state
-        const validCharacters = /^[a-zA-Z ]+$/
-        const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        const today = new Date();
-        const birthdate = new Date(birthDate);
-        if (
-            !(name.length === 0) &&
-            name.match(validCharacters) &&
-            !(email.length === 0) &&
-            validEmail.test(email) &&
-            emailConsent === true &&
-            birthdate < today
-        ) {
-            this.setState({
-            disableSubmitButton: false
-        }, () => console.log('passed'))}
     }
 
     clearHandler = e => {
@@ -65,6 +44,40 @@ class ContactUs extends Component {
         .catch(error => {
             console.log(error)
         })
+    }
+
+    componentDidUpdate() {
+        const { name, email, birthDate, emailConsent, disableSubmitButton } = this.state
+        const validCharacters = /^[a-zA-Z ]+$/
+        const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const today = new Date();
+        const birthdate = new Date(birthDate);
+        if (
+            disableSubmitButton === true &&
+            !(name.length === 0) &&
+            name.match(validCharacters) &&
+            !(email.length === 0) &&
+            validEmail.test(email) &&
+            emailConsent === true &&
+            birthdate < today &&
+            isNaN(birthdate) === false
+        ) {
+            this.setState({
+            disableSubmitButton: false
+        })} else if (
+            disableSubmitButton === false &&
+            ((name.length === 0) ||
+            !(name.match(validCharacters)) ||
+            (email.length === 0) ||
+            !(validEmail.test(email)) ||
+            emailConsent !== true ||
+            birthdate >= today ||
+            isNaN(birthdate) === true)
+        ) {
+            this.setState({
+            disableSubmitButton: true
+        })}
+        console.log(isNaN(birthdate))
     }
 
     render() {
