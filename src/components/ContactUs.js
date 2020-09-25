@@ -30,13 +30,13 @@ class ContactUs extends Component {
              birthDate: '',
              emailConsent: false
         })
-        console.log('clicked clear')
+        // console.log('clicked clear')
     }
 
     handleSubmit = e => {
         const { name, email, birthDate, emailConsent } = this.state
         e.preventDefault()
-        console.log(this.state);
+        // console.log(this.state);
         axios.post('https://my-json-server.typicode.com/JustUtahCoders/interview-users-api/users', JSON.stringify({name : name, email: email, birthDate: birthDate, emailConsent: emailConsent }))
         .then(response => {
             console.log(response)
@@ -44,8 +44,10 @@ class ContactUs extends Component {
         .catch(error => {
             console.log(error)
         })
+        alert('Submitted')
     }
 
+    // componentDidUpdate will check all field inputs are complete and valid. If so, it toggles the state of disableSubmitButton and the submit button becomes available and vice versa
     componentDidUpdate() {
         const { name, email, birthDate, emailConsent, disableSubmitButton } = this.state
         const validCharacters = /^[a-zA-Z ]+$/
@@ -77,7 +79,6 @@ class ContactUs extends Component {
             this.setState({
             disableSubmitButton: true
         })}
-        console.log(isNaN(birthdate))
     }
 
     render() {
